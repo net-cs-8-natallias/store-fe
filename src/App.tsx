@@ -29,6 +29,10 @@ function App() {
   const [brands, setBrands] = useState<ItemBrandModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [basketItems, setBasketItems] = useState<BasketItemModel[]>([]);
+  const [count, setCount] = useState(0);
+  const [user, setUser] = useState(null);
+
   const loadData = async() => {
     setIsLoading(true);
     await axios.get(`http://localhost:5288/catalog-bff-controller/catalog-items?category=${category}&type=${type}&brand=${brand}`)
@@ -118,15 +122,29 @@ function App() {
   };
 
   const addToBasket = (item: BasketItemModel) => {
-    console.log('basket item model: ' + item.size)
+    // ???????????????
+    if(item.size === undefined) return;
+    let newCount = count + 1;
+    setCount(newCount);
+    const basketItemsCopy = [...basketItems, item];
+    setBasketItems(basketItemsCopy);
+  }
+
+  const countItems = (newCount: number) => {
+    setCount(newCount);
+  }
+
+
+  const setNewUser = () => {
+    // TODO
   }
 
   return (
     <BrowserRouter>
     <div className="container-fluid" style={{ padding: '0', margin: '0', overflowX: 'hidden' }}>
-      <Navigator categories={categories} setCategory={setNewCategory} setNewBrand={setNewBrand} brands={brands}/>
+      <Navigator categories={categories} setCategory={setNewCategory} setNewBrand={setNewBrand} brands={brands} count={count}/>
       <div className="row">
-        <div className="col-lg-2 col-3">
+        <div className="col-lg-2 col-4">
         <SideBar types={types} setType={setNewType}/>
         </div>
         <Main>
@@ -141,8 +159,8 @@ function App() {
           : ( 
             <Routes>
               <Route key={HOME_PATH} path={HOME_PATH} element={<Home items={data} brands={brands} sortItems={sortItems}/>}/>
-              <Route key={BASKET_PATH} path={BASKET_PATH} element={<Basket/>}/>
-              <Route key={LOGIN_PATH} path={LOGIN_PATH} element={<Login/>}/>
+              <Route key={BASKET_PATH} path={BASKET_PATH} element={<Basket basketItems={basketItems} countItems={countItems}/>}/>
+              <Route key={LOGIN_PATH} path={LOGIN_PATH} element={<Login setUser={setNewUser}/>}/>
               <Route key={LOGOUT_PATH} path={LOGOUT_PATH} element={<Logout/>}/>
               <Route key={ITEM_PATH} path={ITEM_PATH} element={<CatalogItem brands={brands} addToBasket={addToBasket}/>}/>
             </Routes> 

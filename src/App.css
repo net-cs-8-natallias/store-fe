@@ -19,12 +19,11 @@ body {
 }
 
 .type_item:hover {
-  background-color: rgb(49, 137, 56, 80%);
-  /* borderop: rgb(211, 210, 210); */
+  background-color: rgba(0, 104, 54, 0.8);
 }
 
 .pressed_type_item {
-  background-color: rgb(49, 137, 56, 80%);
+  background-color: rgba(0, 104, 54, 0.8);
   border: none;
   padding: 15px;
   font-weight: bold;

@@ -11,7 +11,6 @@ interface Props {
 const SideBar = ({types, setType}: Props) => {
 
     const [selectedType, setSelectedType] = useState<number>(0);
-//className={`list-group-item type_item ${selectedType === type.id ? 'pressed_link' : 'link'}`}
   return (
     <div style={{ height: '100vh'}}>
             <ul className='list-group type-list'>

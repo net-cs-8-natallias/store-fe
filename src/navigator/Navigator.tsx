@@ -11,8 +11,9 @@ interface Props {
     brands: ItemBrandModel[]
     setCategory: (id: number) => void
     setNewBrand: (brandName: number) => void
+    count: number
 }
-const Navigator = ({user, categories, setCategory, setNewBrand, brands}: Props) => {
+const Navigator = ({user, categories, setCategory, setNewBrand, brands, count}: Props) => {
 
   const [brand, setBrand] = useState('');
 
@@ -75,7 +76,7 @@ const Navigator = ({user, categories, setCategory, setNewBrand, brands}: Props) 
                 }
                 <li className="nav-item">
                 <a className="navbar-brand mx-2" href={BASKET_PATH}><FaShoppingBasket style={{color: 'white'}}/>
-                    <span className="badge badge-success" style={{background: 'green', borderRadius: '25px'}}>3</span>
+                    <span className="badge badge-success" style={{background: 'green', borderRadius: '25px'}}>{count}</span>
                 </a>
                 </li>
                 </ul>
