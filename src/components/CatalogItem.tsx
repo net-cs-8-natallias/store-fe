@@ -4,38 +4,32 @@ import { ItemBrandModel } from "../models/ItemBrandModel";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ItemModel } from "../models/ItemModel";
-import { BasketItemModel } from "../models/BasketItemModel";
+import { IoHandLeft } from "react-icons/io5";
 
 interface Props {
-    addToBasket: (itemodel: BasketItemModel) => void
+    addToBasket: (id: number) => void
     brands: ItemBrandModel[]
 }
 
 const CatalogItem = ({addToBasket, brands}: Props) => {
 
-    const DEFAULT_QUANTITY = 1;
-
     const CATALOG_BASE_URL = "http://localhost:5288/catalog-bff-controller/items/stock"
-    const BASKET_BASE_URL = "http://localhost:5286/basket-bff-controller/item"
+
     let { state } = useLocation();
     const catalogItem = state.catalogItem;
 
-    const [isLoading, setIsLoading] = useState(false);
     const [items, setItems] = useState<ItemModel[]>([]);
     const [item, setItem] = useState<ItemModel>();
 
     const loadItem = () => {
-        setIsLoading(true);
         // TODO - clear user id (for testing without authorization only)
         axios.get(`${CATALOG_BASE_URL}?catalogItemId=${catalogItem.id}`)
         .then(result => {
             console.log(result.data);
             setItems(result.data);
-            setIsLoading(false);
         })
         .catch(err => {
             console.log(err.message)
-            setIsLoading(false);
         })
     }
 
@@ -43,32 +37,15 @@ const CatalogItem = ({addToBasket, brands}: Props) => {
         loadItem();
     }, [])
 
-    const handleClick = () => {
-        setIsLoading(true)
-        // TODO - clear user id (for testing without authorization only)
-        axios.post(`${BASKET_BASE_URL}?userId=${111}`, {
-            itemId: item?.id,
-            quantity: DEFAULT_QUANTITY
-        })
-        .then(result => {
-            console.log(result.status)
-            setIsLoading(false)
-        })
-        .catch(err => {
-            console.log(err.message)
-            setIsLoading(false)
-        })
-
-        addToBasket({
-            id: item?.id,
-            price: catalogItem.price,
-            subprice: catalogItem.price,
-            quantity: DEFAULT_QUANTITY,
-            brandName: brands.find((b: ItemBrandModel) => b.id == catalogItem.itemBrandId)?.brand,
-            itemName: catalogItem.name,
-            size: item?.size
-          })
+    const handleAdding = () => {
+      if(item && item.quantity > 0){
+        addToBasket(Number(item.id))
+      } else {
+        console.log('error')
+      }
     }
+
+
 
   return (
     <div className='container'>
@@ -88,7 +65,7 @@ const CatalogItem = ({addToBasket, brands}: Props) => {
                     defaultValue="0"
                     onChange={(e) => setItem(items.find(item => item.id + '' === e.target.value))}
                     >
-                         <option value="0" disabled>Select size</option>
+                        <option value="0" disabled>Select size</option>
                         {
                             items.map((e, i) => {
                                 return <option 
@@ -105,7 +82,7 @@ const CatalogItem = ({addToBasket, brands}: Props) => {
                     <p className="card-title" style={{textAlign: 'left', textTransform: 'uppercase'}}>{catalogItem.description}</p>
                   </div>
                   <button 
-                  onClick={handleClick} 
+                  onClick={handleAdding} 
                   className="btn btn-outline-success">Add To Basket</button>
                 </div>
             </div>

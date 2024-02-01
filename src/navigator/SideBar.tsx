@@ -12,8 +12,8 @@ const SideBar = ({types, setType}: Props) => {
 
     const [selectedType, setSelectedType] = useState<number>(0);
   return (
-    <div style={{ height: '100vh'}}>
-            <ul className='list-group type-list'>
+    <div style={{ minHeight: '100vh'}} >
+            <ul className='list-group type-list '>
             <li 
                 onClick={() => { setType(0); setSelectedType(0); }} 
                 className={`list-group-item ${selectedType === 0 ? 'pressed_type_item' : 'type_item'}`}
@@ -44,6 +44,3 @@ const SideBar = ({types, setType}: Props) => {
 }
 
 export default SideBar
-
-// onClick={() => setSelectedPage(page.title)}
-// className={selectedPage === page.title ? 'pressed_link' : 'link'}

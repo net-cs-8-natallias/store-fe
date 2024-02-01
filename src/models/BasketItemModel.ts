@@ -1,10 +1,12 @@
 
 export interface BasketItemModel {
-    id: number,
-    price: number,
-    subprice: number,
+    itemId: number,
     quantity: number,
-    brandName: string,
-    itemName: string,
-    size: string
+    brandId: number,
+    typeId: number
+    price: number,
+    size: string,
+    name: string,
+    image: string,
+    stockQuantity: number
 }
