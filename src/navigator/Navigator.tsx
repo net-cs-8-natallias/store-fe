@@ -4,18 +4,20 @@ import { ItemCategoryModel } from '../models/ItemCategoryModel';
 import { useEffect, useState } from 'react';
 import { ItemBrandModel } from '../models/ItemBrandModel';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { StateType } from '../redux/store';
 
 interface Props {
     user?: string,
-    categories: ItemCategoryModel[],
-    brands: ItemBrandModel[]
     setCategory: (id: number) => void
     setNewBrand: (brandName: number) => void
     count: number
 }
-const Navigator = ({user, categories, setCategory, setNewBrand, brands, count}: Props) => {
+const Navigator = ({user, setCategory, setNewBrand, count}: Props) => {
 
   const [brand, setBrand] = useState('');
+  const categories: ItemCategoryModel[] = useSelector<StateType, ItemCategoryModel[]>(state => state.categories);
+  const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
 
 
   return (

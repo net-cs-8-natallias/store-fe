@@ -1,36 +1,48 @@
 import { useLocation } from "react-router-dom";
-import img from '../../public/images/no-image.webp'
 import { ItemBrandModel } from "../models/ItemBrandModel";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ItemModel } from "../models/ItemModel";
-import { IoHandLeft } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import { StateType } from "../redux/store";
+import { catalogService } from "../config/service-config";
+import { setItem } from "../redux/actions";
 
 interface Props {
     addToBasket: (id: number) => void
-    brands: ItemBrandModel[]
+    // brands: ItemBrandModel[]
 }
 
-const CatalogItem = ({addToBasket, brands}: Props) => {
+const CatalogItem = ({addToBasket}: Props) => {
 
-    const CATALOG_BASE_URL = "http://localhost:5288/catalog-bff-controller/items/stock"
+    //const CATALOG_BASE_URL = "http://localhost:5288/catalog-bff-controller/items/stock"
+    const IMAGE_PATH = 'http://127.0.0.1/assets/images/'
+
+    const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
 
     let { state } = useLocation();
     const catalogItem = state.catalogItem;
 
     const [items, setItems] = useState<ItemModel[]>([]);
-    const [item, setItem] = useState<ItemModel>();
+    //const [item, setItem] = useState<ItemModel>();
 
-    const loadItem = () => {
-        // TODO - clear user id (for testing without authorization only)
-        axios.get(`${CATALOG_BASE_URL}?catalogItemId=${catalogItem.id}`)
-        .then(result => {
-            console.log(result.data);
-            setItems(result.data);
-        })
-        .catch(err => {
-            console.log(err.message)
-        })
+    const loadItem = async() => {
+      // setIsLoading(true);
+      const data = await catalogService.getItem(catalogItem.id)
+      dispatch(setItem(data));
+      // setIsLoading(false)
+      // TODO error handler
+
+
+        // // TODO - clear user id (for testing without authorization only)
+        // axios.get(`${CATALOG_BASE_URL}?catalogItemId=${catalogItem.id}`)
+        // .then(result => {
+        //     console.log(result.data);
+        //     setItems(result.data);
+        // })
+        // .catch(err => {
+        //     console.log(err.message)
+        // })
     }
 
     useEffect(() => {
@@ -53,7 +65,7 @@ const CatalogItem = ({addToBasket, brands}: Props) => {
         <div className="col col-12 d-flex justify-content-center my-5">
         <div className="card h-100" style={{ borderRadius: '5px', width: '90%'}}>
 
-            <img src={img} className="card-img-top" alt="..."/>
+            <img src={`${IMAGE_PATH}${catalogItem.image}`} className="card-img-top" alt="..."/>
      
                 <div className="card-body d-block">
                   <h3 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{brands.find((b: ItemBrandModel) => b.id == catalogItem.itemBrandId)?.brand}</h3>
@@ -94,3 +106,7 @@ const CatalogItem = ({addToBasket, brands}: Props) => {
 
 
 export default CatalogItem
+function dispatch(arg0: void) {
+  throw new Error("Function not implemented.");
+}
+
