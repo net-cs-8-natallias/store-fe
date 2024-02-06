@@ -1,6 +1,6 @@
 
 export interface ItemModel {
-    id: Int16Array,
+    id: number,
     catalogItemId: number,
     quantity: number,
     size: string

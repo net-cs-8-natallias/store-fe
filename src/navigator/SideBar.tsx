@@ -2,16 +2,19 @@ import { Link } from 'react-router-dom'
 import { ItemTypeModel } from '../models/ItemTypeModel'
 import { HOME_PATH } from '../config/route-config'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { StateType } from '../redux/store'
 
 interface Props {
-    types: ItemTypeModel[]
     setType: (id: number) => void
 }
 
-const SideBar = ({types, setType}: Props) => {
+const SideBar = ({setType}: Props) => {
 
     const [selectedType, setSelectedType] = useState<number>(0);
-  return (
+    const types: ItemTypeModel[] = useSelector<StateType, ItemTypeModel[]>(state => state.types);
+
+    return (
     <div style={{ minHeight: '100vh'}} >
             <ul className='list-group type-list '>
             <li 

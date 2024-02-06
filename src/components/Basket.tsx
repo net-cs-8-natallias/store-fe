@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BasketItemModel } from '../models/BasketItemModel'
 import axios from 'axios';
-import img from '../../public/images/no-image.webp'
 
 interface Props {
   addToBasket: (id: number) => void,
@@ -13,6 +12,7 @@ interface Props {
 const Basket = ({addToBasket, removeFromBasket, checkoutBasket, itemsCount}: Props) => {
 
   const BASKET_BASE_URL = "http://localhost:5286/basket-bff-controller/items";
+  const IMAGE_PATH = 'http://127.0.0.1/assets/images/'
 
   const [items, setItems] = useState<BasketItemModel[]>([]);
 
@@ -44,7 +44,7 @@ const Basket = ({addToBasket, removeFromBasket, checkoutBasket, itemsCount}: Pro
           items.map((e, i) => <div key={i} className='row my-3' >
             <div className="col col-lg-5 col-12">
               <div className='h-100' style={{width: '18rem', borderRadius: '5px'}}>
-                <img className="card-img" src={img} rel='...'/>
+                <img className="card-img" src={`${IMAGE_PATH}${e.image}`} rel='...'/>
               </div>
             </div>
             <div className="col col-lg-4 col-12">

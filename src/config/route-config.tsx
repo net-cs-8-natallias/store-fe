@@ -13,7 +13,7 @@ export const ITEM_PATH = '/item';
 export const CHECK_OUT_PATH = '/checkout'
 
 export const ROUTES: RouteType[] = [
-    {path: HOME_PATH, lable: 'Home', element: <Home items={[]} brands={[]} sortItems={() => {}}/>},
+    {path: HOME_PATH, lable: 'Home', element: <Home sortItems={() => {}}/>},
     {path: LOGIN_PATH, lable: 'Login', element: <Login setUser={() => {}}/>},
     {path: LOGOUT_PATH, lable: 'Logout', element: <Logout/>},
     {path: BASKET_PATH, lable: 'Basket', element: <Basket addToBasket={() => {}} removeFromBasket={() => {}} checkoutBasket={() => {}} itemsCount={() => {}}/>},
