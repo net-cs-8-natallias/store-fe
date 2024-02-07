@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface Props {
-  setUser: (user: any | null) => void
+  setUser?: (user: any | null) => void
 }
 
 const Login = ({setUser}: Props) => {

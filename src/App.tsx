@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import axios from 'axios'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { BASKET_PATH, HOME_PATH, ITEM_PATH, LOGIN_PATH, LOGOUT_PATH } from './config/route-config';
+import { BASKET_PATH, HOME_PATH, ITEM_PATH, LOGIN_PATH, LOGOUT_PATH, ROUTES } from './config/route-config';
 import Navigator from './navigator/Navigator';
 import SideBar from './navigator/SideBar';
 import Basket from './components/Basket';
@@ -11,29 +10,33 @@ import Login from './components/Login';
 import Logout from './components/Logout';
 import Main from './components/Main';
 import CatalogItem from './components/CatalogItem';
-import { useDispatch } from 'react-redux';
-import { catalogService } from './config/service-config';
-import { setBrands, setCatalog, setCategories, setTypes } from './redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { basketService, catalogService } from './config/service-config';
+import { setBasket, setBrands, setCatalog, setCategories, setItemsCount, setTypes } from './redux/actions';
+import { BasketItemModel } from './models/BasketItemModel';
+import { ItemBrandModel } from './models/ItemBrandModel';
+import { StateType } from './redux/store';
+import { CatalogItemModel } from './models/CatalogItemModel';
+import { RouteType } from './models/RouteType';
 
 
 
 function App() {
 
-  const BASKET_BASE_URL = "http://localhost:5286/basket-bff-controller";
-  const DEFAULT_QUANTITY = 1;
+  const dispatch = useDispatch<any>();
+  const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
+  const catalogItems: CatalogItemModel[] = useSelector<StateType, CatalogItemModel[]>(state => state.catalog);
 
   const [category, setCategory] = useState(0);
   const [brand, setBrand] = useState(0);
   const [type, setType] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [sorting, setSorting] = useState(0);
 
-  const [count, setCount] = useState(0);
 
-  const dispatch = useDispatch<any>();
- 
   const loadData = async() => {
     setIsLoading(true);
-    const data = await catalogService.getCatalog({
+    let data = await catalogService.getCatalog({
       category: category,
       type: type,
       brand: brand
@@ -82,6 +85,7 @@ function App() {
   useEffect(() => {
     console.log("loading filtered data data......")
     loadData()
+    setSorting(0)
   }, [type, category, brand])
 
   useEffect(() => {
@@ -90,73 +94,29 @@ function App() {
     getCategories();
     getBrands();
     getTypes();
+    loadBasket()
   }, [])
 
-  const sortItems = (filter: number) => {
-    // const items: CatalogItemModel[] = useSelector<StateType, CatalogItemModel[]>(state => state.catalog);
-    // dispatch(setCatalog(prevItems => prevItems.sort((a, b) => a.price - b.price)))
+  const loadBasket = async() => {
+    setIsLoading(true)
+    const basketItems = await basketService.getBasket();
+    const count = basketItems.reduce((res: number, cur: BasketItemModel) => res += cur.quantity, 0);
+    dispatch(setItemsCount(count))
+    dispatch(setBasket(basketItems))
+    setIsLoading(false)
+  }
 
-    // if (filter === 1) {
-    //   setData((prevData) => [...prevData].sort((a, b) => a.price - b.price));
-
-    // } else if (filter === 2) {
-    //   setData((prevData) => [...prevData].sort((a, b) => b.price - a.price));
-    // }
+  const sortItems = async() => {
+    if(sorting !== 0){
+        const sortedItems = [...catalogItems].sort((a, b) => sorting === 1 
+            ? a.price - b.price : b.price - a.price);
+        await dispatch(setCatalog(sortedItems));
+    }
   };
 
-  const addToBasket = (id: number) => {
-    setIsLoading(true)
-    // TODO - clear user id (for testing without authorization only)
-    axios.post(`${BASKET_BASE_URL}/item?userId=${111}`, {
-        itemId: id,
-        quantity: DEFAULT_QUANTITY
-    })
-    .then(result => {
-        console.log(result.status)
-        setIsLoading(false)
-    })
-    .catch(err => {
-        console.log(err.message)
-        setIsLoading(false)
-    })
-    let newCount = count + 1;
-    setCount(newCount);
-  }
-
-  const removeFromBasket = (id: number) => {
-    setIsLoading(true)
-    // TODO - clear user id (for testing without authorization only)
-    axios.delete(`${BASKET_BASE_URL}/item/${id}/${DEFAULT_QUANTITY}?userId=${111}`)
-    .then(result => {
-        setIsLoading(false)
-    })
-    .catch(err => {
-        console.log(err.message)
-        setIsLoading(false)
-    })
-    let newCount = count - 1;
-    setCount(newCount);
-  }
-
-  const checkoutBasket = () => {
-    setIsLoading(true)
-    // TODO - clear user id (for testing without authorization only)
-    axios.post(`${BASKET_BASE_URL}/items/checkout?userId=${111}`)
-    .then(result => {
-      setIsLoading(false)
-      setOrderId(result.data)
-      console.log('order id: ' + result.data)
-    })
-    .catch(err => {
-      console.log(err.message)
-      setIsLoading(false)
-    })
-  }
-
-  const itemsCount = (newCount: number) => {
-    setCount(newCount);
-  }
-
+  useEffect(() => {
+      sortItems();
+  }, [sorting]);
 
   const setNewUser = () => {
     // TODO auth
@@ -168,7 +128,6 @@ function App() {
       <Navigator 
         setCategory={setNewCategory} 
         setNewBrand={setNewBrand} 
-        count={count}
       />
       <div className="row ">
         <div className="col-lg-3 col-4 ">
@@ -177,6 +136,33 @@ function App() {
         />
         </div>
         <Main>
+
+
+        <div className="row">
+        <div className="col-lg-4 col-6 my-5">
+          <select 
+            className="form-select" 
+            aria-label="Default select example"
+            value={sorting}
+            onChange={(e) => setSorting(+e.target.value)}
+            >
+            <option value="0">Sort</option>
+            <option value="1">Price from low to high</option>
+            <option value="2">Price from high to low</option>
+          </select>
+        </div>
+        <div className="col-lg-4 col-6 my-5">
+          {brand !== 0 
+          && <>
+          <div className='d-flex justify-content-center'>
+            <h2>{brands.find(e => e.id == brand)?.brand} </h2>
+            <button onClick={() => setBrand(0)} type="button" className="btn-close" aria-label="Close"></button>
+          </div>
+          </>}
+        </div>
+      </div>
+
+
         {
           isLoading 
           ? (
@@ -187,50 +173,21 @@ function App() {
           ) 
           : ( 
             <Routes>
-              <Route 
-                key={HOME_PATH} 
-                path={HOME_PATH} 
-                element={<Home 
-                sortItems={sortItems}/>}
-              />
-              <Route 
-                key={BASKET_PATH} 
-                path={BASKET_PATH} 
-                element={<Basket 
-                  addToBasket={addToBasket} 
-                  removeFromBasket={removeFromBasket} 
-                  checkoutBasket={checkoutBasket}
-                  itemsCount={itemsCount}
-                />}
-              />
-              <Route 
-                key={LOGIN_PATH} 
-                path={LOGIN_PATH} 
-                element={<Login 
-                  setUser={setNewUser}
-                />}
-              />
-              <Route 
-                key={LOGOUT_PATH} 
-                path={LOGOUT_PATH} 
-                element={<Logout/>}
-              />
-              <Route 
-                key={ITEM_PATH} 
-                path={ITEM_PATH} 
-                element={<CatalogItem 
-                  addToBasket={addToBasket}
-                />}
-              />
+              { getRoutes(ROUTES) }
             </Routes> 
           )
         }
         </Main>
       </div>
     </div>
-
       </BrowserRouter>
   )
 }
 
 export default App
+
+const getRoutes = (routes: RouteType[]) => {
+  return routes.map((e) => <Route key={e.path} path={e.path} element={e.element}/>)
+}
+
+

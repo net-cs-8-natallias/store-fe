@@ -26,14 +26,14 @@ export default class CatalogServiceRest implements CatalogService {
                 return [];
             });
     }
-    async getItem(id: number): Promise<ItemModel | null> {
+    async getItems(id: number): Promise<ItemModel[]> {
         return await axios.get(`${this._baseUrl}/items/stock?catalogItemId=${id}`)
         .then(result => {
             return result.data;
         })
         .catch(err => {
             console.error(err.message);
-            return null;
+            return [];
         })
     }
 

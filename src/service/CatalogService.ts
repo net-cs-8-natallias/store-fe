@@ -9,7 +9,7 @@ import { ItemTypeModel } from "../models/ItemTypeModel";
 export default interface CatalogService {
 
     getCatalog(filter: Filter): Promise<CatalogItemModel[]>;
-    getItem(id: number): Promise<ItemModel | null>;
+    getItems(id: number): Promise<ItemModel[]>;
     getBrands(): Promise<ItemBrandModel[]>;
     getTypes(): Promise<ItemTypeModel[]>;
     getCategories(): Promise<ItemCategoryModel[]>;
