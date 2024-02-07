@@ -78,13 +78,11 @@ function App() {
   }
 
   useEffect(() => {
-    console.log("loading filtered data data......")
     loadData()
     setSorting(0)
   }, [type, category, brand])
 
   useEffect(() => {
-    console.log("loading all data......")
     loadData();
     getCategories();
     getBrands();
