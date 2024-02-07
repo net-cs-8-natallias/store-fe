@@ -1,7 +1,7 @@
 import { BASKET_PATH, HOME_PATH, LOGIN_PATH, LOGOUT_PATH } from '../config/route-config'
 import { FaShoppingBasket } from "react-icons/fa";
 import { ItemCategoryModel } from '../models/ItemCategoryModel';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ItemBrandModel } from '../models/ItemBrandModel';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -11,14 +11,18 @@ interface Props {
     user?: string,
     setCategory: (id: number) => void
     setNewBrand: (brandName: number) => void
-    count: number
 }
-const Navigator = ({user, setCategory, setNewBrand, count}: Props) => {
+const Navigator = ({user, setCategory, setNewBrand}: Props) => {
 
   const [brand, setBrand] = useState('');
   const categories: ItemCategoryModel[] = useSelector<StateType, ItemCategoryModel[]>(state => state.categories);
   const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
+  const count: number = useSelector<StateType, number>(state => state.count);
 
+  const handleBrand = () => {
+    setNewBrand(brands.filter(e => e.brand.toLowerCase().includes(brand.trim().toLowerCase()))[0].id)
+    setBrand('')
+  }
 
   return (
      <>
@@ -39,12 +43,13 @@ const Navigator = ({user, setCategory, setNewBrand, count}: Props) => {
                         aria-label="Search"
                         value={brand}
                         />
-                    <button 
-                        onClick={() => setNewBrand(brands.filter(e => e.brand.toLowerCase().includes(brand.trim().toLowerCase()))[0].id)} 
+                    <Link
+                        to={HOME_PATH} 
                         className="btn btn-outline-success" 
-                        type="submit">
-                            Search
-                    </button>
+                        onClick={handleBrand} 
+                        >
+                        Search
+                    </Link>
                 </form>
                  
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">

@@ -1,35 +1,33 @@
-import { useLocation } from "react-router-dom";
 import { ItemBrandModel } from "../models/ItemBrandModel";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { ItemModel } from "../models/ItemModel";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { StateType } from "../redux/store";
-import { catalogService } from "../config/service-config";
-import { setItem } from "../redux/actions";
+import { basketService, catalogService } from "../config/service-config";
+import { CatalogItemModel } from "../models/CatalogItemModel";
+import { setItemsCount } from "../redux/actions";
 
-interface Props {
-    addToBasket: (id: number) => void
-    // brands: ItemBrandModel[]
-}
-
-const CatalogItem = ({addToBasket}: Props) => {
+const CatalogItem = () => {
 
     //const CATALOG_BASE_URL = "http://localhost:5288/catalog-bff-controller/items/stock"
     const IMAGE_PATH = 'http://127.0.0.1/assets/images/'
 
+    const dispatch = useDispatch<any>();
     const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
+    const catalogItem: CatalogItemModel = useSelector<StateType, CatalogItemModel>(state => state.catalogItem);
+    const count: number = useSelector<StateType, number>(state => state.count);
 
-    let { state } = useLocation();
-    const catalogItem = state.catalogItem;
+    //let { state } = useLocation();
+    //const catalogItem = state.catalogItem;
 
     const [items, setItems] = useState<ItemModel[]>([]);
-    //const [item, setItem] = useState<ItemModel>();
+    const [item, setItem] = useState<ItemModel>();
 
     const loadItem = async() => {
       // setIsLoading(true);
-      const data = await catalogService.getItem(catalogItem.id)
-      dispatch(setItem(data));
+      const data = await catalogService.getItems(catalogItem.id)
+      setItems(data)
+      // dispatch(setItem(data));
       // setIsLoading(false)
       // TODO error handler
 
@@ -51,7 +49,8 @@ const CatalogItem = ({addToBasket}: Props) => {
 
     const handleAdding = () => {
       if(item && item.quantity > 0){
-        addToBasket(Number(item.id))
+        basketService.addToBusket(item.id)
+        dispatch(setItemsCount(count + 1));
       } else {
         console.log('error')
       }
@@ -106,7 +105,5 @@ const CatalogItem = ({addToBasket}: Props) => {
 
 
 export default CatalogItem
-function dispatch(arg0: void) {
-  throw new Error("Function not implemented.");
-}
+
 

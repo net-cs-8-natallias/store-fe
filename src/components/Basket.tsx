@@ -1,37 +1,47 @@
 import { useEffect, useState } from 'react'
 import { BasketItemModel } from '../models/BasketItemModel'
-import axios from 'axios';
+import { basketService } from '../config/service-config';
+import { useDispatch, useSelector } from 'react-redux';
+import { StateType } from '../redux/store';
+import { setBasket, setItemsCount } from '../redux/actions';
 
-interface Props {
-  addToBasket: (id: number) => void,
-  removeFromBasket: (id: number) => void
-  checkoutBasket: () => void
-  itemsCount: (count: number) => void
-}
+const Basket = () => {
 
-const Basket = ({addToBasket, removeFromBasket, checkoutBasket, itemsCount}: Props) => {
-
-  const BASKET_BASE_URL = "http://localhost:5286/basket-bff-controller/items";
   const IMAGE_PATH = 'http://127.0.0.1/assets/images/'
 
-  const [items, setItems] = useState<BasketItemModel[]>([]);
-
+  const dispatch = useDispatch<any>();
+  const basketItems: BasketItemModel[] = useSelector<StateType, BasketItemModel[]>(state => state.basketItems);
+ 
   useEffect(() => {
     loadBasket()
   }, [])
 
+  const addToBasket = async(id: number) => {
+    await basketService.addToBusket(id);
+    await loadBasket();
+    // TODO error handler
+  }
 
-  const loadBasket = () => {
-    //user id just for testing with no autorization
-    axios.get(`${BASKET_BASE_URL}?userId=${111}`)
-    .then(result => {
-      setItems(result.data)
-      itemsCount(result.data.reduce((res: number, cur: BasketItemModel) => res += cur.quantity, 0))
-    })
-    .catch(err => {
-      console.log(err.message);
-    })
-    
+  const removeFromBasket = async(id: number) => {
+    await basketService.removeFromBasket(id);
+    await loadBasket()
+    // TODO error handler
+  }
+
+  const checkoutBasket = async() => {
+    const orderId = await basketService.checkoutBasket();
+    // TODO error handler
+    // TODO display order id
+  }
+
+
+  const loadBasket = async() => {
+    const basketItems = await basketService.getBasket();
+    dispatch(setBasket(basketItems));
+    const count = basketItems.reduce((res: number, cur: BasketItemModel) => res += cur.quantity, 0);
+    dispatch(setItemsCount(count));
+    console.log(basketItems)
+    // TODO error handler
   }
 
   return (
@@ -41,7 +51,7 @@ const Basket = ({addToBasket, removeFromBasket, checkoutBasket, itemsCount}: Pro
          <h1 style={{color: 'green'}}>Check Out</h1>
         </div>     
         {
-          items.map((e, i) => <div key={i} className='row my-3' >
+          basketItems.map((e, i) => <div key={i} className='row my-3' >
             <div className="col col-lg-5 col-12">
               <div className='h-100' style={{width: '18rem', borderRadius: '5px'}}>
                 <img className="card-img" src={`${IMAGE_PATH}${e.image}`} rel='...'/>
@@ -57,17 +67,17 @@ const Basket = ({addToBasket, removeFromBasket, checkoutBasket, itemsCount}: Pro
             <div className="col col-lg-3 col-12">
               <button onClick={() => removeFromBasket(e.itemId)} disabled={e.quantity <= 0} type="button" className="btn btn-secondary" style={{fontWeight: 'bold', width: '40px'}}>-</button>
               <span className='p-3' style={{fontWeight: 'bold', fontSize: '20px'}}>{e.quantity}</span>
-              <button onClick={() => addToBasket(e.itemId)} disabled={e.stockQuantity <1} type="button" className="btn btn-secondary" style={{fontWeight: 'bold', width: '40px'}}>+</button>
+              <button onClick={() => addToBasket(e.itemId)} disabled={e.stockQuantity - e.quantity <1} type="button" className="btn btn-secondary" style={{fontWeight: 'bold', width: '40px'}}>+</button>
             </div>
           </div>)
         }
         <div className="container">
         <div className="row p-5" style={{background: 'rgb(242, 242, 242)'}}>
           <div className="col col-lg-8 col-12 ">
-            <h3>Total: <span>{items.reduce((res, cur) => res + (cur.price * cur.quantity), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} </span>$</h3>
+            <h3>Total: <span>{basketItems.reduce((res, cur) => res + (cur.price * cur.quantity), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} </span>$</h3>
           </div>
           <div className="col col-lg-4 col-12 ">
-            <button onClick={checkoutBasket} className='btn btn-success' style={{width: '100%'}} disabled={items.length < 1}>Place Order</button>
+            <button onClick={checkoutBasket} className='btn btn-success' style={{width: '100%'}} disabled={basketItems.length < 1}>Place Order</button>
           </div>
         </div>
         </div>
