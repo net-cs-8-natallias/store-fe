@@ -5,18 +5,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StateType } from '../redux/store';
 import { setBasket, setItemsCount } from '../redux/actions';
 
-const Basket = () => {
+interface Props {
+  isModal?: boolean
+}
+
+const Basket = ({isModal}: Props) => {
 
   const IMAGE_PATH = 'http://127.0.0.1/assets/images/'
 
   const dispatch = useDispatch<any>();
-  const basketItems: BasketItemModel[] = useSelector<StateType, BasketItemModel[]>(state => state.basketItems);
+  //const basketItems: BasketItemModel[] = useSelector<StateType, BasketItemModel[]>(state => state.basketItems);
   const [items, setItems] = useState<BasketItemModel[]>([]);
   
   useEffect(() => {
     loadBasket()
     setItems(items)
-  }, [])
+  }, [items])
 
   const addToBasket = async(id: number) => {
     await basketService.addToBusket(id);
@@ -54,7 +58,7 @@ const Basket = () => {
         </div>     
         {
           items.map((e, i) => <div key={i} className='row ' >
-            <div className="col col-lg-5 col-12">
+            <div className={`${!!!isModal && "col-lg-5 "}col col-12`}>
               <div className='h-100' style={{width: '18rem', borderRadius: '5px'}}>
                 <img className="card-img" src={`${IMAGE_PATH}${e.image}`} rel='...'/>
               </div>
@@ -79,7 +83,7 @@ const Basket = () => {
             <h3>Total: <span>{items.reduce((res, cur) => res + (cur.price * cur.quantity), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} </span>$</h3>
           </div>
           <div className="col col-lg-4 col-12 ">
-            <button onClick={checkoutBasket} className='btn btn-success' style={{width: '100%'}} disabled={basketItems.length < 1}>Place Order</button>
+            <button onClick={checkoutBasket} className='btn btn-success' style={{width: '100%'}} disabled={items.length < 1}>Place Order</button>
           </div>
         </div>
         </div>

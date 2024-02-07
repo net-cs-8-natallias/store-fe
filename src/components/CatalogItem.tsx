@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { StateType } from "../redux/store";
 import { basketService, catalogService } from "../config/service-config";
 import { CatalogItemModel } from "../models/CatalogItemModel";
-import { setItemsCount } from "../redux/actions";
+import { setBasket, setItemsCount } from "../redux/actions";
+import BasketModal from "./BasketModal";
 
 const CatalogItem = () => {
 
@@ -29,10 +30,12 @@ const CatalogItem = () => {
         loadItem();
     }, [])
 
-    const handleAdding = () => {
+    const handleAdding = async() => {
       if(item && item.quantity > 0){
         basketService.addToBusket(item.id)
         dispatch(setItemsCount(count + 1));
+        const basketItems = await basketService.getBasket();
+        dispatch(setBasket(basketItems))
       } else {
         console.log('error')
       }
@@ -43,7 +46,7 @@ const CatalogItem = () => {
   return (
     <div className='container'>
       <div className="row">
-        <div className="col col-12 d-flex justify-content-center my-5">
+        <div className="col col-12 d-flex justify-content-center">
         <div className="card h-100" style={{ borderRadius: '5px', width: '90%'}}>
 
             <img src={`${IMAGE_PATH}${catalogItem.image}`} className="card-img-top" alt="..."/>
@@ -76,10 +79,13 @@ const CatalogItem = () => {
                   </div>
                   <button 
                   onClick={handleAdding} 
+                  data-bs-target="#exampleModal"
+                  data-bs-toggle="modal"
                   className="btn btn-outline-success">Add To Basket</button>
                 </div>
             </div>
         </div>
+        <BasketModal/>
       </div>
     </div>
   )
