@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BasketItemModel } from '../models/BasketItemModel'
 import { basketService } from '../config/service-config';
 import { useDispatch, useSelector } from 'react-redux';

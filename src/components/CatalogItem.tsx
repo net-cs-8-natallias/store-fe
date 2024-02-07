@@ -9,7 +9,6 @@ import { setItemsCount } from "../redux/actions";
 
 const CatalogItem = () => {
 
-    //const CATALOG_BASE_URL = "http://localhost:5288/catalog-bff-controller/items/stock"
     const IMAGE_PATH = 'http://127.0.0.1/assets/images/'
 
     const dispatch = useDispatch<any>();
@@ -17,30 +16,13 @@ const CatalogItem = () => {
     const catalogItem: CatalogItemModel = useSelector<StateType, CatalogItemModel>(state => state.catalogItem);
     const count: number = useSelector<StateType, number>(state => state.count);
 
-    //let { state } = useLocation();
-    //const catalogItem = state.catalogItem;
-
     const [items, setItems] = useState<ItemModel[]>([]);
     const [item, setItem] = useState<ItemModel>();
 
     const loadItem = async() => {
-      // setIsLoading(true);
       const data = await catalogService.getItems(catalogItem.id)
       setItems(data)
-      // dispatch(setItem(data));
-      // setIsLoading(false)
       // TODO error handler
-
-
-        // // TODO - clear user id (for testing without authorization only)
-        // axios.get(`${CATALOG_BASE_URL}?catalogItemId=${catalogItem.id}`)
-        // .then(result => {
-        //     console.log(result.data);
-        //     setItems(result.data);
-        // })
-        // .catch(err => {
-        //     console.log(err.message)
-        // })
     }
 
     useEffect(() => {

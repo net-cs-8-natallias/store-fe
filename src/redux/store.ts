@@ -30,7 +30,6 @@ const reducer = combineReducers<StateType> ({
     count: itemsCountReducer as any
 })
 
-// export const store = configureStore({reducer})
 export const store = configureStore({reducer,
     middleware: (getMiddleware) => getMiddleware({
         serializableCheck: false

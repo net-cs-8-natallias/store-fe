@@ -1,15 +1,10 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { BASKET_PATH, HOME_PATH, ITEM_PATH, LOGIN_PATH, LOGOUT_PATH, ROUTES } from './config/route-config';
+import { ROUTES } from './config/route-config';
 import Navigator from './navigator/Navigator';
 import SideBar from './navigator/SideBar';
-import Basket from './components/Basket';
-import Home from './components/Home';
-import Login from './components/Login';
-import Logout from './components/Logout';
 import Main from './components/Main';
-import CatalogItem from './components/CatalogItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { basketService, catalogService } from './config/service-config';
 import { setBasket, setBrands, setCatalog, setCategories, setItemsCount, setTypes } from './redux/actions';
