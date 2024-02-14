@@ -75,16 +75,35 @@ const Navigator = ({user, setCategory, setNewBrand}: Props) => {
                 {
                     user 
                     ? (<li className="nav-item">
-                        <a className="navbar-brand mx-2" href={LOGOUT_PATH} style={{color: 'white', fontSize: '20px'}}>Logout</a>
+                        <Link
+                            to={LOGOUT_PATH} 
+                            className="nav-link active mx-4"
+                            style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}
+                            >
+                            LOGOUT
+                        </Link>
                     </li>) 
                     : (<li className="nav-item">
-                        <a className="navbar-brand mx-2 " href={LOGIN_PATH} style={{color: 'white', fontSize: '20px'}}>Login</a>
+                        <Link
+                            to={LOGIN_PATH} 
+                            className="nav-link active mx-4"
+                            style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}
+                            >
+                            LOGIN
+                        </Link>
                     </li>)
                 }
                 <li className="nav-item">
-                <a className="navbar-brand mx-2" href={BASKET_PATH}><FaShoppingBasket style={{color: 'white'}}/>
-                    <span className="badge badge-success" style={{background: 'green', borderRadius: '25px'}}>{count}</span>
-                </a>
+                    <Link
+                        to={BASKET_PATH} 
+                        className="nav-link active mx-4"
+                        style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}
+                        >
+                        <FaShoppingBasket style={{color: 'white'}}/>
+                        {
+                        count !== 0 && <span className="badge badge-success" style={{background: 'green', borderRadius: '25px'}}>{count}</span>
+                    }
+                    </Link>
                 </li>
                 </ul>
             </div>

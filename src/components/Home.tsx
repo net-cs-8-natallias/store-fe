@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 import { ITEM_PATH } from '../config/route-config'
 import { useDispatch, useSelector } from 'react-redux'
 import { StateType } from '../redux/store'
-import { setCatalogItem } from '../redux/actions'
-
+import { setCatalog, setCatalogItem } from '../redux/actions'
+import { useEffect, useState } from 'react'
 
 const Home = () => {
 
@@ -14,9 +14,50 @@ const Home = () => {
   const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
   const dispatch = useDispatch<any>();
 
+  const [sorting, setSorting] = useState(0);
+  //const [brand, setBrand] = useState(0);
+
+  const sortItems = async() => {
+    if(sorting !== 0){
+        const sortedItems = [...items].sort((a, b) => sorting === 1 
+            ? a.price - b.price : b.price - a.price);
+        await dispatch(setCatalog(sortedItems));
+    }
+  };
+
+  useEffect(() => {
+    sortItems();
+}, [sorting]);
   
   return (
+
     <div className="container">
+            <div className="row">
+
+              <div className="col-lg-4 col-6 my-3">
+                <select 
+                className="form-select" 
+                aria-label="Default select example"
+                value={sorting}
+                onChange={(e) => setSorting(+e.target.value)}
+                >
+                  <option value="0" disabled>Sort</option>
+                  <option value="1">Price from low to high</option>
+                  <option value="2">Price from high to low</option>
+                </select>
+              </div>
+              {/* <div className="col-lg-4 col-6 my-3">
+                {brand !== 0 
+                && <>
+                  <div className='d-flex justify-content-center'>
+                    <h2>{brands.find(e => e.id == brand)?.brand} </h2>
+                    <button onClick={() => setBrand(0)} type="button" className="btn-close" aria-label="Close"></button>
+                  </div>
+                </>}
+              </div> */}
+            </div>
+
+
       <div className="row">
         {
           items.map((e, i) => {
@@ -29,8 +70,8 @@ const Home = () => {
               <div className="card h-100 item" style={{width: '18rem', borderRadius: '5px'}}>
                 <img src={`${IMAGE_PATH}${e.image}`} className="card-img-top" alt="..."/>
                 <div className="card-body">
-                  <h3 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{brands.find((b) => b.id == e.itemBrandId)?.brand}</h3>
-                  <h5 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{e.name}</h5>
+                  <h3 className="card-title" style={{textAlign: 'left', textTransform: 'uppercase'}}>{brands.find((b) => b.id == e.itemBrandId)?.brand}</h3>
+                  <h5 className="card-title" style={{textAlign: 'left', textTransform: 'uppercase'}}>{e.name}</h5>
                   <p className="card-title" style={{textAlign: 'right', textTransform: 'uppercase'}}>{e.price} $</p>
                 </div>
             </div>

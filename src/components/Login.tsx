@@ -20,11 +20,11 @@ const Login = ({setUser}: Props) => {
             <h1 className='d-flex justify-content-center'>Login</h1>
             <div className="mb-4 ">
               <label className="form-label" style={{fontWeight: 'bold', color: 'rgb(81, 141, 81)'}}>User name</label>
-              <input type="text" className="form-control form-control-lg d-flex justify-content-center" id="exampleFormControlInput1" />
+              <input type="text" className="form-control form-control-lg d-flex justify-content-center" />
             </div>
             <div className="mb-4">
               <label className="form-label" style={{fontWeight: 'bold', color: 'rgb(81, 141, 81)'}}>Email address</label>
-              <input type="password" className="form-control form-control-lg d-flex justify-content-center" id="exampleFormControlInput1" />
+              <input type="password" className="form-control form-control-lg d-flex justify-content-center" />
             </div>
             <button onClick={handleLogin} className='btn btn-outline-success btn-lg' style={{width: '100%'}}>Signin</button>
           </div>

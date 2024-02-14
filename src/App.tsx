@@ -1,33 +1,28 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes} from 'react-router-dom';
 import { ROUTES } from './config/route-config';
 import Navigator from './navigator/Navigator';
 import SideBar from './navigator/SideBar';
 import Main from './components/Main';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector} from 'react-redux';
 import { basketService, catalogService } from './config/service-config';
 import { setBasket, setBrands, setCatalog, setCategories, setItemsCount, setTypes } from './redux/actions';
 import { BasketItemModel } from './models/BasketItemModel';
+import { RouteType } from './models/RouteType';
 import { ItemBrandModel } from './models/ItemBrandModel';
 import { StateType } from './redux/store';
-import { CatalogItemModel } from './models/CatalogItemModel';
-import { RouteType } from './models/RouteType';
 
 
 
 function App() {
-
   const dispatch = useDispatch<any>();
   const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
-  const catalogItems: CatalogItemModel[] = useSelector<StateType, CatalogItemModel[]>(state => state.catalog);
 
   const [category, setCategory] = useState(0);
   const [brand, setBrand] = useState(0);
   const [type, setType] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [sorting, setSorting] = useState(0);
-
 
   const loadData = async() => {
     setIsLoading(true);
@@ -79,7 +74,6 @@ function App() {
 
   useEffect(() => {
     loadData()
-    setSorting(0)
   }, [type, category, brand])
 
   useEffect(() => {
@@ -99,24 +93,12 @@ function App() {
     setIsLoading(false)
   }
 
-  const sortItems = async() => {
-    if(sorting !== 0){
-        const sortedItems = [...catalogItems].sort((a, b) => sorting === 1 
-            ? a.price - b.price : b.price - a.price);
-        await dispatch(setCatalog(sortedItems));
-    }
-  };
-
-  useEffect(() => {
-      sortItems();
-  }, [sorting]);
-
   const setNewUser = () => {
     // TODO auth
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter >
     <div className="container-fluid" style={{ padding: '0', margin: '0', overflowX: 'hidden' }}> 
       <Navigator 
         setCategory={setNewCategory} 
@@ -130,31 +112,15 @@ function App() {
         </div>
         <Main>
 
-
-        <div className="row">
-        <div className="col-lg-4 col-6 my-5">
-          <select 
-            className="form-select" 
-            aria-label="Default select example"
-            value={sorting}
-            onChange={(e) => setSorting(+e.target.value)}
-            >
-            <option value="0">Sort</option>
-            <option value="1">Price from low to high</option>
-            <option value="2">Price from high to low</option>
-          </select>
-        </div>
-        <div className="col-lg-4 col-6 my-5">
-          {brand !== 0 
-          && <>
-          <div className='d-flex justify-content-center'>
-            <h2>{brands.find(e => e.id == brand)?.brand} </h2>
-            <button onClick={() => setBrand(0)} type="button" className="btn-close" aria-label="Close"></button>
+          <div className="col-lg-4 col-6 mt-3">
+            {brand !== 0 
+            && <>
+              <div className='d-flex justify-content-center'>
+                <h2>{brands.find(e => e.id == brand)?.brand} </h2>
+                <button onClick={() => setBrand(0)} type="button" className="btn-close" aria-label="Close"></button>
+              </div>
+            </>}
           </div>
-          </>}
-        </div>
-      </div>
-
 
         {
           isLoading 
@@ -182,5 +148,6 @@ export default App
 const getRoutes = (routes: RouteType[]) => {
   return routes.map((e) => <Route key={e.path} path={e.path} element={e.element}/>)
 }
+
 
 

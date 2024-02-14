@@ -49,7 +49,9 @@ const CatalogItem = () => {
         <div className="col col-12 d-flex justify-content-center">
         <div className="card h-100" style={{ borderRadius: '5px', width: '90%'}}>
 
+            {/* <div className='h-100' style={{ width: '10rem', borderRadius: '5px' }}> */}
             <img src={`${IMAGE_PATH}${catalogItem.image}`} className="card-img-top" alt="..."/>
+            {/* </div> */}
      
                 <div className="card-body d-block">
                   <h3 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{brands.find((b: ItemBrandModel) => b.id == catalogItem.itemBrandId)?.brand}</h3>
