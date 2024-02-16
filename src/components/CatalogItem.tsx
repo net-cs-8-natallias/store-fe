@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { ItemModel } from "../models/ItemModel";
 import { useDispatch, useSelector } from "react-redux";
 import { StateType } from "../redux/store";
-import { basketService, catalogService } from "../config/service-config";
+import { authService, basketService, catalogService } from "../config/service-config";
 import { CatalogItemModel } from "../models/CatalogItemModel";
 import { setBasket, setItemsCount } from "../redux/actions";
 import BasketModal from "./BasketModal";
+import { User } from "oidc-client";
 
 const CatalogItem = () => {
 
@@ -16,9 +17,11 @@ const CatalogItem = () => {
     const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
     const catalogItem: CatalogItemModel = useSelector<StateType, CatalogItemModel>(state => state.catalogItem);
     const count: number = useSelector<StateType, number>(state => state.count);
+    //const user: User | null | undefined = useSelector<StateType, User | null | undefined>(state => state.user);
 
     const [items, setItems] = useState<ItemModel[]>([]);
     const [item, setItem] = useState<ItemModel>();
+    const [user, setUser] = useState<User | null | undefined>(null);
 
     const loadItem = async() => {
       const data = await catalogService.getItems(catalogItem.id)
@@ -31,12 +34,17 @@ const CatalogItem = () => {
     }, [])
 
     const handleAdding = async() => {
-      if(item && item.quantity > 0){
+      if(user && item && item.quantity > 0){
         basketService.addToBusket(item.id)
         dispatch(setItemsCount(count + 1));
         const basketItems = await basketService.getBasket();
         dispatch(setBasket(basketItems))
-      } else {
+      } else if(user === null || user === undefined){
+        const currentUser = await authService.login();
+        setUser(currentUser)
+        //dispatch(setUser(currentUser));
+      }
+      else {
         console.log('error')
       }
     }
@@ -48,11 +56,7 @@ const CatalogItem = () => {
       <div className="row">
         <div className="col col-12 d-flex justify-content-center">
         <div className="card h-100" style={{ borderRadius: '5px', width: '90%'}}>
-
-            {/* <div className='h-100' style={{ width: '10rem', borderRadius: '5px' }}> */}
             <img src={`${IMAGE_PATH}${catalogItem.image}`} className="card-img-top" alt="..."/>
-            {/* </div> */}
-     
                 <div className="card-body d-block">
                   <h3 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{brands.find((b: ItemBrandModel) => b.id == catalogItem.itemBrandId)?.brand}</h3>
                   <h5 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{catalogItem.name}</h5>
@@ -87,7 +91,7 @@ const CatalogItem = () => {
                 </div>
             </div>
         </div>
-        <BasketModal/>
+        {/* <BasketModal/> */}
       </div>
     </div>
   )

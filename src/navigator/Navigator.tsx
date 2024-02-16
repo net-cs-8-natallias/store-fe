@@ -6,18 +6,19 @@ import { ItemBrandModel } from '../models/ItemBrandModel';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { StateType } from '../redux/store';
+import { UserData } from '../models/UserData';
 
 interface Props {
-    user?: string,
     setCategory: (id: number) => void
     setNewBrand: (brandName: number) => void
 }
-const Navigator = ({user, setCategory, setNewBrand}: Props) => {
+const Navigator = ({setCategory, setNewBrand}: Props) => {
 
   const [brand, setBrand] = useState('');
   const categories: ItemCategoryModel[] = useSelector<StateType, ItemCategoryModel[]>(state => state.categories);
   const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
   const count: number = useSelector<StateType, number>(state => state.count);
+  const user: UserData = useSelector<StateType, UserData>(state => state.userData);
 
   const handleBrand = () => {
     setNewBrand(brands.filter(e => e.brand.toLowerCase().includes(brand.trim().toLowerCase()))[0].id)
@@ -73,8 +74,12 @@ const Navigator = ({user, setCategory, setNewBrand}: Props) => {
                 </ul>
                 <ul className="navbar-nav mb-2 mb-lg-0">
                 {
-                    user 
-                    ? (<li className="nav-item">
+                    user.token !== ""
+                    ? (<>
+                    {/* <li className="nav-item nav-link active mx-4" style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}>
+                        {user.name}
+                    </li> */}
+                    <li className="nav-item">
                         <Link
                             to={LOGOUT_PATH} 
                             className="nav-link active mx-4"
@@ -82,7 +87,8 @@ const Navigator = ({user, setCategory, setNewBrand}: Props) => {
                             >
                             LOGOUT
                         </Link>
-                    </li>) 
+                    </li>
+                    </>) 
                     : (<li className="nav-item">
                         <Link
                             to={LOGIN_PATH} 

@@ -5,8 +5,19 @@ import { ItemBrandModel } from "../models/ItemBrandModel"
 import { ItemCategoryModel } from "../models/ItemCategoryModel"
 import { ItemModel } from "../models/ItemModel"
 import { ItemTypeModel } from "../models/ItemTypeModel"
-import { basketReducer, brandReducer, catalogItemReducer, catalogReducer, categoryReducer, itemsCountReducer, itemsRedsucer, typeReducer } from "./reducers"
+import { 
+    basketReducer, 
+    brandReducer, 
+    catalogItemReducer, 
+    catalogReducer, 
+    categoryReducer, 
+    itemsCountReducer, 
+    itemsRedsucer, 
+    typeReducer, 
+    userDataReducer} from "./reducers"
 import { BasketItemModel } from "../models/BasketItemModel"
+import { UserData } from "../models/UserData"
+
 
 export type StateType = {
     catalog: CatalogItemModel[],
@@ -16,7 +27,8 @@ export type StateType = {
     categories: ItemCategoryModel[],
     basketItems: BasketItemModel[],
     catalogItem: CatalogItemModel,
-    count: number
+    count: number,
+    userData: UserData
 }
 
 const reducer = combineReducers<StateType> ({
@@ -27,10 +39,13 @@ const reducer = combineReducers<StateType> ({
     categories: categoryReducer as any,
     basketItems: basketReducer as any,
     catalogItem: catalogItemReducer as any,
-    count: itemsCountReducer as any
+    count: itemsCountReducer as any,
+    userData: userDataReducer as any
 })
 
 export const store = configureStore({reducer,
     middleware: (getMiddleware) => getMiddleware({
         serializableCheck: false
-    })})
+})})
+
+
