@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { BasketItemModel } from '../models/BasketItemModel'
 import { basketService } from '../config/service-config';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setBasket, setItemsCount } from '../redux/actions';
+import { StateType } from '../redux/store';
+import { User } from 'oidc-client';
 
 interface Props {
   isModal?: boolean
@@ -17,39 +19,51 @@ const Basket = ({isModal}: Props) => {
   const [items, setItems] = useState<BasketItemModel[]>([]);
   const [orderId, setOrderId] = useState(0);
   const [isOrderPlaced, setIsOrderPlased] = useState(false);
-  
+  const user: User | null = useSelector<StateType, User | null>(state => state.userData)
+
   useEffect(() => {
-    loadBasket()
-    setItems(items)
+    if(user?.access_token){
+      loadBasket()
+    }
   }, [])
 
   const addToBasket = async(id: number) => {
-    await basketService.addToBusket(id);
-    loadBasket();
+    console.log('add to basket')
+    if(user){
+      await basketService.addToBusket(user.access_token, id);
+      await loadBasket();
+    }
     // TODO error handler
   }
 
   const removeFromBasket = async(id: number) => {
-    await basketService.removeFromBasket(id);
-    loadBasket()
+   if(user){
+    await basketService.removeFromBasket(user.access_token, id);
+    await loadBasket()
+   }
     // TODO error handler
   }
 
   const checkoutBasket = async() => {
-    const orderId = await basketService.checkoutBasket();
-    console.log(orderId)
-    setOrderId(orderId)
-    setIsOrderPlased(true);
+    if(user){
+      const orderId = await basketService.checkoutBasket(user.access_token);
+      console.log(orderId)
+      setOrderId(orderId)
+      setIsOrderPlased(true);
+    }
     // TODO error handler
     // TODO display order id
   }
 
   const loadBasket = async() => {
-    const basketItems = await basketService.getBasket();
-    setItems(basketItems)
-    await dispatch(setBasket(basketItems));
-    const count = basketItems.reduce((res: number, cur: BasketItemModel) => res += cur.quantity, 0);
-    dispatch(setItemsCount(count));
+    console.log('load basket')
+    if(user){
+      const basketItems = await basketService.getBasket(user.access_token);
+      setItems(basketItems)
+      await dispatch(setBasket(basketItems));
+      const count = basketItems.reduce((res: number, cur: BasketItemModel) => res += cur.quantity, 0);
+      dispatch(setItemsCount(count));
+    }
     // TODO error handler
   }
 
@@ -110,9 +124,6 @@ const Basket = ({isModal}: Props) => {
           </div>
           </div>
         }
-
-
-
       </div>
     </div>
   )

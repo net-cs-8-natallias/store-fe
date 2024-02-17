@@ -16,7 +16,7 @@ import {
     typeReducer, 
     userDataReducer} from "./reducers"
 import { BasketItemModel } from "../models/BasketItemModel"
-import { UserData } from "../models/UserData"
+import { User } from "oidc-client"
 
 
 export type StateType = {
@@ -28,7 +28,7 @@ export type StateType = {
     basketItems: BasketItemModel[],
     catalogItem: CatalogItemModel,
     count: number,
-    userData: UserData
+    userData: User | null
 }
 
 const reducer = combineReducers<StateType> ({

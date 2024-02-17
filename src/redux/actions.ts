@@ -5,7 +5,7 @@ import { ItemBrandModel } from "../models/ItemBrandModel";
 import { ItemTypeModel } from "../models/ItemTypeModel";
 import { ItemCategoryModel } from "../models/ItemCategoryModel";
 import { BasketItemModel } from "../models/BasketItemModel";
-import { UserData } from "../models/UserData";
+import { User } from "oidc-client";
 
 export const SET_CATALOG_ACTION = "/catalog/set";
 export const SET_ITEMS_ACTION = "/item/set";
@@ -49,6 +49,6 @@ export function setCatalogItem(catalogItem: CatalogItemModel): PayloadAction<Cat
     return {payload: catalogItem, type: SET_CATALOG_ITEM_ACTION}
 }
 
-export function setUserData(userData: UserData): PayloadAction<UserData> {
+export function setUserData(userData: User | null): PayloadAction<User | null> {
     return {payload: userData, type: AUTH_ACTION}
 }

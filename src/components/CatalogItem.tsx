@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { ItemModel } from "../models/ItemModel";
 import { useDispatch, useSelector } from "react-redux";
 import { StateType } from "../redux/store";
-import { authService, basketService, catalogService } from "../config/service-config";
+import { basketService, catalogService } from "../config/service-config";
 import { CatalogItemModel } from "../models/CatalogItemModel";
 import { setBasket, setItemsCount } from "../redux/actions";
-import BasketModal from "./BasketModal";
+import { LOGIN_PATH } from "../config/route-config";
+import { useNavigate } from "react-router-dom";
 import { User } from "oidc-client";
+import BasketModal from "./BasketModal";
 
 const CatalogItem = () => {
 
@@ -17,12 +19,13 @@ const CatalogItem = () => {
     const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
     const catalogItem: CatalogItemModel = useSelector<StateType, CatalogItemModel>(state => state.catalogItem);
     const count: number = useSelector<StateType, number>(state => state.count);
-    //const user: User | null | undefined = useSelector<StateType, User | null | undefined>(state => state.user);
+    const user: User | null = useSelector<StateType, User | null>(state => state.userData);
 
     const [items, setItems] = useState<ItemModel[]>([]);
     const [item, setItem] = useState<ItemModel>();
-    const [user, setUser] = useState<User | null | undefined>(null);
-
+  
+    const navigate = useNavigate();
+    
     const loadItem = async() => {
       const data = await catalogService.getItems(catalogItem.id)
       setItems(data)
@@ -35,14 +38,13 @@ const CatalogItem = () => {
 
     const handleAdding = async() => {
       if(user && item && item.quantity > 0){
-        basketService.addToBusket(item.id)
+        basketService.addToBusket(user.access_token, item.id)
         dispatch(setItemsCount(count + 1));
-        const basketItems = await basketService.getBasket();
+        const basketItems = await basketService.getBasket(user.access_token);
         dispatch(setBasket(basketItems))
-      } else if(user === null || user === undefined){
-        const currentUser = await authService.login();
-        setUser(currentUser)
-        //dispatch(setUser(currentUser));
+      }
+      else if(!user){
+        navigate(LOGIN_PATH);
       }
       else {
         console.log('error')
@@ -91,7 +93,7 @@ const CatalogItem = () => {
                 </div>
             </div>
         </div>
-        {/* <BasketModal/> */}
+        <BasketModal/>
       </div>
     </div>
   )

@@ -6,22 +6,21 @@ export default class AuthServiceClient implements AuthService {
     config = {
         authority: 'http://localhost:7001',
         client_id: 'ReactClient',
-        redirect_uri: 'http://localhost:5173/',
+        redirect_uri: 'http://localhost:5173/item',
         response_type: 'code',
-        scope: 'openid profile catalog',
+        scope: 'openid profile basket',
         post_logout_redirect_uri: 'http://localhost:5173/signout-callback-oidc',
     };
 
     mgr = new Oidc.UserManager(this.config);
-    // mgr = new Oidc.UserManager({
-    //     // other configurations...
-    //     userStore: new Oidc.WebStorageStateStore({ store: window.sessionStorage }),
-    // });
 
     loadUser = async () => {
-        console.log('LOAD USER')
         try {
-          await this.mgr.getUser();
+          let user =  await this.mgr.getUser();
+          if(user === null) {
+            user = await this.getUser()
+          }
+          return user
         } catch (error) {
           console.error('Error loading user:', error);
         }
@@ -29,9 +28,6 @@ export default class AuthServiceClient implements AuthService {
 
     login = async () => {
         try {
-            console.log('LOGIN')
-          console.log('Login function called');
-          //await this.getUser
           await this.mgr.signinRedirect();
         } catch (error) {
           console.error('Error during login:', error);
@@ -40,20 +36,21 @@ export default class AuthServiceClient implements AuthService {
     };
 
     logout = async () => {
-        console.log('LOGOUT')
         try {
-        console.log('Logout function called');
-        await this.mgr.signoutRedirect();
+            await this.mgr.signoutRedirect();
         } catch (error) {
-        console.error('Error during logout:', error);
+            console.error('Error during logout:', error);
+        return null
         }
     };
 
     getUser = async () => {
-        console.log('GET USER')
-        const user = await this.mgr.signinRedirectCallback();
-        console.log(user)
-        return {id: user.profile.sid || "", name: user.profile.name || "", token: user.access_token}
+        try {
+            const user = await this.mgr.signinRedirectCallback();
+            return user
+        } catch (error) {
+            return null
+        }
     }
 
   };

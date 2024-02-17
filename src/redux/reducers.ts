@@ -17,7 +17,7 @@ import { ItemBrandModel } from "../models/ItemBrandModel";
 import { ItemTypeModel } from "../models/ItemTypeModel";
 import { ItemCategoryModel } from "../models/ItemCategoryModel";
 import { BasketItemModel } from "../models/BasketItemModel";
-import { UserData, emptyUserData } from "../models/UserData";
+import { User } from "oidc-client";
 
 
 const emptyCatalogItem: CatalogItemModel = {
@@ -30,8 +30,6 @@ const emptyCatalogItem: CatalogItemModel = {
     itemCategoryId: 0,
     description: ''
 }
-
-const emptyUser = emptyUserData;
 
 export const itemsCountReducer: Reducer<number, PayloadAction<number>> = 
 (count = 0, action): number => {
@@ -73,8 +71,7 @@ export const basketReducer:Reducer<BasketItemModel[], PayloadAction<BasketItemMo
      return action.type === SET_BASKET_ACTION && action.payload.length > 0 ? action.payload : basketItems;
 }
 
-export const userDataReducer: Reducer<UserData, PayloadAction<UserData>> =
-(userData = emptyUser, action): UserData => {
+export const userDataReducer: Reducer<User | null, PayloadAction<any>> =
+(userData = null, action): User | null => {
     return action.type === AUTH_ACTION ? action.payload : userData;
 }
-

@@ -74,7 +74,8 @@ const Navigator = ({setCategory, setNewBrand}: Props) => {
                 </ul>
                 <ul className="navbar-nav mb-2 mb-lg-0">
                 {
-                    user.token !== ""
+                    // user.token !== ""
+                    user
                     ? (<>
                     {/* <li className="nav-item nav-link active mx-4" style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}>
                         {user.name}
