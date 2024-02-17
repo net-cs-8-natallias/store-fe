@@ -6,7 +6,7 @@ export default class AuthServiceClient implements AuthService {
     config = {
         authority: 'http://localhost:7001',
         client_id: 'ReactClient',
-        redirect_uri: 'http://localhost:5173/item',
+        redirect_uri: 'http://localhost:5173',
         response_type: 'code',
         scope: 'openid profile basket',
         post_logout_redirect_uri: 'http://localhost:5173/signout-callback-oidc',

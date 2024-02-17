@@ -25,8 +25,8 @@ export function setCatalog(catalog: CatalogItemModel[]): PayloadAction<CatalogIt
     return {payload: catalog, type: SET_CATALOG_ACTION}
 }
 
-export function setItems(item: ItemModel[]): PayloadAction<ItemModel[]> {
-    return {payload: item, type: SET_ITEMS_ACTION}
+export function setItems(items: ItemModel[]): PayloadAction<ItemModel[]> {
+    return {payload: items, type: SET_ITEMS_ACTION}
 }
 
 export function setBrands(brands: ItemBrandModel[]): PayloadAction<ItemBrandModel[]> {
@@ -41,10 +41,6 @@ export function setCategories(categories: ItemCategoryModel[]): PayloadAction<It
     return {payload: categories, type: SET_CATEGORY_ACTION}
 }
 
-export function setBasket(basketItems: BasketItemModel[]): PayloadAction<BasketItemModel[]> {
-    return {payload: basketItems, type: SET_BASKET_ACTION}
-}
-
 export function setCatalogItem(catalogItem: CatalogItemModel): PayloadAction<CatalogItemModel> {
     return {payload: catalogItem, type: SET_CATALOG_ITEM_ACTION}
 }
@@ -52,3 +48,9 @@ export function setCatalogItem(catalogItem: CatalogItemModel): PayloadAction<Cat
 export function setUserData(userData: User | null): PayloadAction<User | null> {
     return {payload: userData, type: AUTH_ACTION}
 }
+
+export function setBasket(basketItems: BasketItemModel[]): PayloadAction<BasketItemModel[]> {
+    return {payload: basketItems, type: SET_BASKET_ACTION}
+}
+
+

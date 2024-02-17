@@ -9,7 +9,7 @@ export const HOME_PATH = '/';
 export const LOGIN_PATH = '/login';
 export const LOGOUT_PATH = '/logout';
 export const BASKET_PATH = '/basket';
-export const ITEM_PATH = '/item';
+export const ITEM_PATH = '/item/:itemId';
 export const CHECK_OUT_PATH = '/checkout'
 
 export const ROUTES: RouteType[] = [

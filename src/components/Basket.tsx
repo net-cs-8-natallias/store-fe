@@ -22,9 +22,7 @@ const Basket = ({isModal}: Props) => {
   const user: User | null = useSelector<StateType, User | null>(state => state.userData)
 
   useEffect(() => {
-    if(user?.access_token){
-      loadBasket()
-    }
+    user?.access_token && loadBasket()
   }, [])
 
   const addToBasket = async(id: number) => {
@@ -33,7 +31,6 @@ const Basket = ({isModal}: Props) => {
       await basketService.addToBusket(user.access_token, id);
       await loadBasket();
     }
-    // TODO error handler
   }
 
   const removeFromBasket = async(id: number) => {
@@ -41,7 +38,6 @@ const Basket = ({isModal}: Props) => {
     await basketService.removeFromBasket(user.access_token, id);
     await loadBasket()
    }
-    // TODO error handler
   }
 
   const checkoutBasket = async() => {
@@ -51,8 +47,6 @@ const Basket = ({isModal}: Props) => {
       setOrderId(orderId)
       setIsOrderPlased(true);
     }
-    // TODO error handler
-    // TODO display order id
   }
 
   const loadBasket = async() => {
@@ -62,9 +56,8 @@ const Basket = ({isModal}: Props) => {
       setItems(basketItems)
       await dispatch(setBasket(basketItems));
       const count = basketItems.reduce((res: number, cur: BasketItemModel) => res += cur.quantity, 0);
-      dispatch(setItemsCount(count));
+      await dispatch(setItemsCount(count));
     }
-    // TODO error handler
   }
 
   return (

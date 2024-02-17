@@ -10,6 +10,7 @@ import { LOGIN_PATH } from "../config/route-config";
 import { useNavigate } from "react-router-dom";
 import { User } from "oidc-client";
 import BasketModal from "./BasketModal";
+import { useParams } from 'react-router-dom';
 
 const CatalogItem = () => {
 
@@ -17,28 +18,34 @@ const CatalogItem = () => {
 
     const dispatch = useDispatch<any>();
     const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
-    const catalogItem: CatalogItemModel = useSelector<StateType, CatalogItemModel>(state => state.catalogItem);
     const count: number = useSelector<StateType, number>(state => state.count);
     const user: User | null = useSelector<StateType, User | null>(state => state.userData);
 
-    const [items, setItems] = useState<ItemModel[]>([]);
     const [item, setItem] = useState<ItemModel>();
+    const [items, setItems] = useState<ItemModel[]>([]);
+    const [catalogItem, setCatalogItem] = useState<CatalogItemModel>()
   
     const navigate = useNavigate();
-    
+    const { itemId } = useParams();
+
     const loadItem = async() => {
-      const data = await catalogService.getItems(catalogItem.id)
-      setItems(data)
-      // TODO error handler
+      if(itemId) {
+        const currentCatalogItem = await catalogService.getCatalogItem(+itemId);
+        if(currentCatalogItem){
+          setCatalogItem(currentCatalogItem)
+          const currentItems = await catalogService.getItems(currentCatalogItem.id)
+          currentItems && setItems(currentItems)
+        }
+      }
     }
 
     useEffect(() => {
-        loadItem();
-    }, [])
+      loadItem();
+    }, [itemId]);
 
     const handleAdding = async() => {
       if(user && item && item.quantity > 0){
-        basketService.addToBusket(user.access_token, item.id)
+        await basketService.addToBusket(user.access_token, item.id)
         dispatch(setItemsCount(count + 1));
         const basketItems = await basketService.getBasket(user.access_token);
         dispatch(setBasket(basketItems))
@@ -51,13 +58,14 @@ const CatalogItem = () => {
       }
     }
 
-
-
   return (
     <div className='container'>
       <div className="row">
         <div className="col col-12 d-flex justify-content-center">
-        <div className="card h-100" style={{ borderRadius: '5px', width: '90%'}}>
+        {
+          catalogItem !== undefined 
+          &&
+          <div className="card h-100" style={{ borderRadius: '5px', width: '90%'}}>
             <img src={`${IMAGE_PATH}${catalogItem.image}`} className="card-img-top" alt="..."/>
                 <div className="card-body d-block">
                   <h3 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{brands.find((b: ItemBrandModel) => b.id == catalogItem.itemBrandId)?.brand}</h3>
@@ -92,6 +100,7 @@ const CatalogItem = () => {
                   className="btn btn-outline-success">Add To Basket</button>
                 </div>
             </div>
+        }
         </div>
         <BasketModal/>
       </div>
