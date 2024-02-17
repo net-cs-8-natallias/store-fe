@@ -5,53 +5,48 @@ import { useDispatch, useSelector } from "react-redux";
 import { StateType } from "../redux/store";
 import { basketService, catalogService } from "../config/service-config";
 import { CatalogItemModel } from "../models/CatalogItemModel";
-import { setItemsCount } from "../redux/actions";
+import { setBasket, setItemsCount } from "../redux/actions";
+import { LOGIN_PATH } from "../config/route-config";
+import { useNavigate } from "react-router-dom";
+import { User } from "oidc-client";
+import BasketModal from "./BasketModal";
 
 const CatalogItem = () => {
 
-    //const CATALOG_BASE_URL = "http://localhost:5288/catalog-bff-controller/items/stock"
     const IMAGE_PATH = 'http://127.0.0.1/assets/images/'
 
     const dispatch = useDispatch<any>();
     const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
     const catalogItem: CatalogItemModel = useSelector<StateType, CatalogItemModel>(state => state.catalogItem);
     const count: number = useSelector<StateType, number>(state => state.count);
-
-    //let { state } = useLocation();
-    //const catalogItem = state.catalogItem;
+    const user: User | null = useSelector<StateType, User | null>(state => state.userData);
 
     const [items, setItems] = useState<ItemModel[]>([]);
     const [item, setItem] = useState<ItemModel>();
-
+  
+    const navigate = useNavigate();
+    
     const loadItem = async() => {
-      // setIsLoading(true);
       const data = await catalogService.getItems(catalogItem.id)
       setItems(data)
-      // dispatch(setItem(data));
-      // setIsLoading(false)
       // TODO error handler
-
-
-        // // TODO - clear user id (for testing without authorization only)
-        // axios.get(`${CATALOG_BASE_URL}?catalogItemId=${catalogItem.id}`)
-        // .then(result => {
-        //     console.log(result.data);
-        //     setItems(result.data);
-        // })
-        // .catch(err => {
-        //     console.log(err.message)
-        // })
     }
 
     useEffect(() => {
         loadItem();
     }, [])
 
-    const handleAdding = () => {
-      if(item && item.quantity > 0){
-        basketService.addToBusket(item.id)
+    const handleAdding = async() => {
+      if(user && item && item.quantity > 0){
+        basketService.addToBusket(user.access_token, item.id)
         dispatch(setItemsCount(count + 1));
-      } else {
+        const basketItems = await basketService.getBasket(user.access_token);
+        dispatch(setBasket(basketItems))
+      }
+      else if(!user){
+        navigate(LOGIN_PATH);
+      }
+      else {
         console.log('error')
       }
     }
@@ -61,11 +56,9 @@ const CatalogItem = () => {
   return (
     <div className='container'>
       <div className="row">
-        <div className="col col-12 d-flex justify-content-center my-5">
+        <div className="col col-12 d-flex justify-content-center">
         <div className="card h-100" style={{ borderRadius: '5px', width: '90%'}}>
-
             <img src={`${IMAGE_PATH}${catalogItem.image}`} className="card-img-top" alt="..."/>
-     
                 <div className="card-body d-block">
                   <h3 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{brands.find((b: ItemBrandModel) => b.id == catalogItem.itemBrandId)?.brand}</h3>
                   <h5 className="card-title" style={{textAlign: 'center', textTransform: 'uppercase'}}>{catalogItem.name}</h5>
@@ -94,10 +87,13 @@ const CatalogItem = () => {
                   </div>
                   <button 
                   onClick={handleAdding} 
+                  data-bs-target="#exampleModal"
+                  data-bs-toggle="modal"
                   className="btn btn-outline-success">Add To Basket</button>
                 </div>
             </div>
         </div>
+        <BasketModal/>
       </div>
     </div>
   )

@@ -3,8 +3,6 @@ import BasketService from "./BasketService";
 import { BasketItemModel } from "../models/BasketItemModel";
 
 const DEFAULT_QUANTITY = 1;
-// TODO - clear user id (for testing without authorization only)
-const USER_ID_URI = "?userId=111"
 
 export default class BasketServiceRest implements BasketService {
 
@@ -13,39 +11,54 @@ export default class BasketServiceRest implements BasketService {
     constructor(baseUrl: string){
         this._baseUrl = baseUrl
     }
-    
-    async getBasket(): Promise<BasketItemModel[]> {
-        return await axios.get(`${this._baseUrl}/items${USER_ID_URI}`)
+
+    async getBasket(user: string): Promise<BasketItemModel[]> {
+        return await axios.get(`${this._baseUrl}/items`, {
+            headers: {
+              Authorization: `Bearer ${user}`,
+            },
+          })
         .then(result => {
           return result.data
         })
         .catch(err => {
           console.log(err.message);
+          return []
         })
     }
 
-    async addToBusket(id: number): Promise<void> {
-        await axios.post(`${this._baseUrl}/item${USER_ID_URI}`, {
+    async addToBusket(user: string, id: number): Promise<void> {
+        await axios.post(`${this._baseUrl}/item`, {
             itemId: id,
             quantity: DEFAULT_QUANTITY
+        }, {
+          headers: {
+            Authorization: `Bearer ${user}`, 
+        },
         })
-        .then(result => {
-            console.log(result.status)
-        })
-        .catch(err => {
-            console.log(err.message)
-        })
-    }
-
-    async removeFromBasket(id: number): Promise<void> {
-        await axios.delete(`${this._baseUrl}/item/${id}/${DEFAULT_QUANTITY}${USER_ID_URI}`)
         .then()
         .catch(err => {
             console.log(err.message)
         })
     }
-    async checkoutBasket(): Promise<number> {
-        return await axios.post(`${this._baseUrl}/items/checkout${USER_ID_URI}`)
+
+    async removeFromBasket(user: string, id: number): Promise<void> {
+        await axios.delete(`${this._baseUrl}/item/${id}/${DEFAULT_QUANTITY}`, {
+            headers: {
+              Authorization: `Bearer ${user}`, 
+            },
+          })
+        .then()
+        .catch(err => {
+            console.log(err.message)
+        })
+    }
+    async checkoutBasket(user: string): Promise<number> {
+        return await axios.post(`${this._baseUrl}/items/checkout`, {}, {
+            headers: {
+              Authorization: `Bearer ${user}`, 
+            },
+          })
         .then(result => {
             return result.data;
         })

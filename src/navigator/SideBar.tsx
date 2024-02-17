@@ -17,22 +17,29 @@ const SideBar = ({setType}: Props) => {
     return (
     <div style={{ minHeight: '100vh'}} >
             <ul className='list-group type-list '>
-            <li 
-                onClick={() => { setType(0); setSelectedType(0); }} 
-                className={`list-group-item ${selectedType === 0 ? 'pressed_type_item' : 'type_item'}`}
-            >
-                    All types
-            </li>
+                <li 
+                    // className={`list-group-item ${selectedType === 0 ? 'pressed_type_item' : 'type_item'}`}
+                    onClick={() => setSelectedType(0)}
+                    >
+                        <Link
+                        className={`list-group-item px-4 ${selectedType === 0 ? 'pressed_type_item' : 'type_item'}`}
+                        to={HOME_PATH} 
+                        // className="nav-link active mx-4"
+                        style={{fontSize: '15px', fontWeight: 'bold' }}
+                        onClick={() => setType(0)}
+                        >
+                            All types
+                        </Link>
+                </li>
             {
                 types.map((type, i) => (
                     <li 
-                    className={`list-group-item ${selectedType === type.id ? 'pressed_type_item' : 'type_item'}`}
                     key={type.id} 
                     onClick={() => setSelectedType(type.id)}
                     >
                         <Link
+                        className={`list-group-item px-4 ${selectedType === type.id ? 'pressed_type_item' : 'type_item'}`}
                         to={HOME_PATH} 
-                        className="nav-link active mx-4"
                         style={{fontSize: '15px', fontWeight: 'bold' }}
                         onClick={() => setType(type.id)}
                         >

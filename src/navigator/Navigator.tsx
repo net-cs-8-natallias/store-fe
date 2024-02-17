@@ -6,18 +6,19 @@ import { ItemBrandModel } from '../models/ItemBrandModel';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { StateType } from '../redux/store';
+import { UserData } from '../models/UserData';
 
 interface Props {
-    user?: string,
     setCategory: (id: number) => void
     setNewBrand: (brandName: number) => void
 }
-const Navigator = ({user, setCategory, setNewBrand}: Props) => {
+const Navigator = ({setCategory, setNewBrand}: Props) => {
 
   const [brand, setBrand] = useState('');
   const categories: ItemCategoryModel[] = useSelector<StateType, ItemCategoryModel[]>(state => state.categories);
   const brands: ItemBrandModel[] = useSelector<StateType, ItemBrandModel[]>(state => state.brands);
   const count: number = useSelector<StateType, number>(state => state.count);
+  const user: UserData = useSelector<StateType, UserData>(state => state.userData);
 
   const handleBrand = () => {
     setNewBrand(brands.filter(e => e.brand.toLowerCase().includes(brand.trim().toLowerCase()))[0].id)
@@ -73,18 +74,43 @@ const Navigator = ({user, setCategory, setNewBrand}: Props) => {
                 </ul>
                 <ul className="navbar-nav mb-2 mb-lg-0">
                 {
-                    user 
-                    ? (<li className="nav-item">
-                        <a className="navbar-brand mx-2" href={LOGOUT_PATH} style={{color: 'white', fontSize: '20px'}}>Logout</a>
-                    </li>) 
+                    // user.token !== ""
+                    user
+                    ? (<>
+                    {/* <li className="nav-item nav-link active mx-4" style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}>
+                        {user.name}
+                    </li> */}
+                    <li className="nav-item">
+                        <Link
+                            to={LOGOUT_PATH} 
+                            className="nav-link active mx-4"
+                            style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}
+                            >
+                            LOGOUT
+                        </Link>
+                    </li>
+                    </>) 
                     : (<li className="nav-item">
-                        <a className="navbar-brand mx-2 " href={LOGIN_PATH} style={{color: 'white', fontSize: '20px'}}>Login</a>
+                        <Link
+                            to={LOGIN_PATH} 
+                            className="nav-link active mx-4"
+                            style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}
+                            >
+                            LOGIN
+                        </Link>
                     </li>)
                 }
                 <li className="nav-item">
-                <a className="navbar-brand mx-2" href={BASKET_PATH}><FaShoppingBasket style={{color: 'white'}}/>
-                    <span className="badge badge-success" style={{background: 'green', borderRadius: '25px'}}>{count}</span>
-                </a>
+                    <Link
+                        to={BASKET_PATH} 
+                        className="nav-link active mx-4"
+                        style={{ color: 'white', fontSize: '15px', fontWeight: 'bold' }}
+                        >
+                        <FaShoppingBasket style={{color: 'white'}}/>
+                        {
+                        count !== 0 && <span className="badge badge-success" style={{background: 'green', borderRadius: '25px'}}>{count}</span>
+                    }
+                    </Link>
                 </li>
                 </ul>
             </div>

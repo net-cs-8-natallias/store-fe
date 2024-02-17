@@ -1,14 +1,28 @@
-import React from 'react'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux';
+import { authService } from '../config/service-config';
+import { setUserData } from '../redux/actions';
+//import { emptyUserData } from '../models/UserData';
+import { HOME_PATH } from '../config/route-config';
+import { useNavigate } from 'react-router-dom';
 
 const Logout = () => {
 
-  // onlogout -> to clear the basket
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    logoutUser();
+  }, [])
+
+  const logoutUser = async () => {
+    await authService.logout();
+    dispatch(setUserData(null))
+    navigate(HOME_PATH);
+  }
   
   return (
-    <div>
-    
-      Logout
-    </div>
+    <></>
   )
 }
 

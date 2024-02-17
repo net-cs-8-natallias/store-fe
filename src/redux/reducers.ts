@@ -1,6 +1,7 @@
 import { Reducer } from "react";
 import { CatalogItemModel } from "../models/CatalogItemModel";
 import { 
+    AUTH_ACTION,
     SET_BASKET_ACTION, 
     SET_BRAND_ACTION, 
     SET_BUSKET_ITEMS_COUNT_ACTION, 
@@ -8,16 +9,18 @@ import {
     SET_CATALOG_ITEM_ACTION, 
     SET_CATEGORY_ACTION, 
     SET_ITEMS_ACTION, 
-    SET_TYPE_ACTION } from "./actions";
+    SET_TYPE_ACTION, 
+} from "./actions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { ItemModel } from "../models/ItemModel";
 import { ItemBrandModel } from "../models/ItemBrandModel";
 import { ItemTypeModel } from "../models/ItemTypeModel";
 import { ItemCategoryModel } from "../models/ItemCategoryModel";
 import { BasketItemModel } from "../models/BasketItemModel";
+import { User } from "oidc-client";
 
 
-const exmptyCatalogItem: CatalogItemModel = {
+const emptyCatalogItem: CatalogItemModel = {
     id: 0,
     name: '',
     itemBrandId: 0,
@@ -39,7 +42,7 @@ export const catalogReducer:Reducer<CatalogItemModel[], PayloadAction<CatalogIte
 }
 
 export const catalogItemReducer: Reducer<CatalogItemModel, PayloadAction<CatalogItemModel>> = 
-(catalogItem = exmptyCatalogItem, action): CatalogItemModel => {
+(catalogItem = emptyCatalogItem, action): CatalogItemModel => {
     return action.type === SET_CATALOG_ITEM_ACTION ? action.payload : catalogItem
 }
 
@@ -68,6 +71,7 @@ export const basketReducer:Reducer<BasketItemModel[], PayloadAction<BasketItemMo
      return action.type === SET_BASKET_ACTION && action.payload.length > 0 ? action.payload : basketItems;
 }
 
-
-
-
+export const userDataReducer: Reducer<User | null, PayloadAction<any>> =
+(userData = null, action): User | null => {
+    return action.type === AUTH_ACTION ? action.payload : userData;
+}
