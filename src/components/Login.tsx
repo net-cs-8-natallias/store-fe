@@ -2,8 +2,6 @@ import { useEffect } from 'react'
 import { authService } from '../config/service-config';
 
 const Login = () => {
-  //const dispatch = useDispatch<any>();
-
   
   useEffect(() => {
     const userLogin = async() => {
@@ -11,6 +9,7 @@ const Login = () => {
       await authService.getUser();
     }
     userLogin()
+    
   }, [])
 
   

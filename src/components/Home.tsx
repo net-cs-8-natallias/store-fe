@@ -1,7 +1,6 @@
 import { CatalogItemModel } from '../models/CatalogItemModel'
 import { ItemBrandModel } from '../models/ItemBrandModel'
 import { Link } from 'react-router-dom'
-import { ITEM_PATH } from '../config/route-config'
 import { useDispatch, useSelector } from 'react-redux'
 import { StateType } from '../redux/store'
 import { setCatalog, setCatalogItem } from '../redux/actions'
@@ -15,7 +14,6 @@ const Home = () => {
   const dispatch = useDispatch<any>();
 
   const [sorting, setSorting] = useState(0);
-  //const [brand, setBrand] = useState(0);
 
   const sortItems = async() => {
     if(sorting !== 0){
@@ -27,7 +25,7 @@ const Home = () => {
 
   useEffect(() => {
     sortItems();
-}, [sorting]);
+  }, [sorting]);
   
   return (
 
@@ -46,15 +44,6 @@ const Home = () => {
                   <option value="2">Price from high to low</option>
                 </select>
               </div>
-              {/* <div className="col-lg-4 col-6 my-3">
-                {brand !== 0 
-                && <>
-                  <div className='d-flex justify-content-center'>
-                    <h2>{brands.find(e => e.id == brand)?.brand} </h2>
-                    <button onClick={() => setBrand(0)} type="button" className="btn-close" aria-label="Close"></button>
-                  </div>
-                </>}
-              </div> */}
             </div>
 
 
@@ -62,10 +51,10 @@ const Home = () => {
         {
           items.map((e, i) => {
             return  <div key={i} className="col col-12-xs col-4-md pb-5">
-            <Link
-               to={ITEM_PATH} 
-               onClick={() => dispatch(setCatalogItem(e))}
+            <Link 
+               to={`item/${e.id}`} 
                style={{textDecoration: 'none'}}
+               onClick={() => dispatch(setCatalogItem(e))}
             >
               <div className="card h-100 item" style={{width: '18rem', borderRadius: '5px'}}>
                 <img src={`${IMAGE_PATH}${e.image}`} className="card-img-top" alt="..."/>

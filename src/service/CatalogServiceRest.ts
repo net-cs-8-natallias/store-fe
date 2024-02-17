@@ -37,6 +37,17 @@ export default class CatalogServiceRest implements CatalogService {
         })
     }
 
+    async getCatalogItem(id: number): Promise<CatalogItemModel | null> {
+      return await axios.get(`${this._baseUrl}/catalog-items/${id}`)
+        .then(result => {
+            return result.data;
+        })
+        .catch(err => {
+            console.error(err.message);
+            return null;
+        })
+    }
+
     async getBrands(): Promise<ItemBrandModel[]> {
         return await axios.get(`${this._baseUrl}/brands`)
         .then(result => {

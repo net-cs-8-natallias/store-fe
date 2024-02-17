@@ -10,6 +10,7 @@ export default interface CatalogService {
 
     getCatalog(filter: Filter): Promise<CatalogItemModel[]>;
     getItems(id: number): Promise<ItemModel[]>;
+    getCatalogItem(id: number): Promise<CatalogItemModel | null>;
     getBrands(): Promise<ItemBrandModel[]>;
     getTypes(): Promise<ItemTypeModel[]>;
     getCategories(): Promise<ItemCategoryModel[]>;
